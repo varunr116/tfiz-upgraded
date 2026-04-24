@@ -1,0 +1,198 @@
+/* ─── tryon.css ──────────────────────────────────────────────
+   Styles for the Try-On overlay mode.
+   Scoped under #tryon-overlay — zero conflict with main AR UI.
+   ──────────────────────────────────────────────────────────── */
+
+/* ── Overlay — full screen, sits above everything ── */
+#tryon-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.25s ease;
+}
+
+#tryon-overlay.tryon-hidden {
+  display: none;
+}
+
+/* ── Layer 1: mirrored camera feed ── */
+#tryon-feed-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* ── Layer 2: Three.js source canvas — hidden, used as drawImage source ── */
+#tryon-canvas {
+  display: none;
+}
+
+/* ── Layer 3: composited output (garment + seg occluder) ── */
+#tryon-seg-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ── Step-back prompt ── */
+#tryon-prompt {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  padding: 10px 20px;
+  color: #fff;
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ── Back button — top left ── */
+.tryon-back-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.2s;
+}
+.tryon-back-btn:active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ── Garment switcher bar — bottom, matches exp-bar style ── */
+#tryon-bar {
+  position: absolute;
+  bottom: max(24px, env(safe-area-inset-bottom, 24px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 40px;
+  padding: 10px 16px;
+  min-width: 220px;
+  max-width: 80vw;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+#tryon-bar-centre {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+#tryon-exp-name {
+  color: #fff;
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+#tryon-exp-dots {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.tryon-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.tryon-dot.active {
+  background: #fff;
+  transform: scale(1.3);
+}
+
+/* ── Arrow buttons ── */
+.tryon-arrow {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 22px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.15s;
+  font-family: inherit;
+}
+.tryon-arrow:active {
+  color: #fff;
+}
+
+/* ── TRY ON entry button — sits above exp-bar in main UI ── */
+#btn-tryon {
+  position: fixed;
+  bottom: 112px;
+  right: 72px; /* to the left of the flip button */
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  padding: 0 12px;
+  width: auto;
+  height: 48px;
+  border-radius: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+#btn-tryon:active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Hide tryon button when UI is hidden (matches existing .ui-hidden pattern) */
+#btn-tryon.ui-hidden {
+  opacity: 0;
+  pointer-events: none;
+}

@@ -1,0 +1,144 @@
+/* ─── unlock.css ───────────────────────────────────────────────
+   Styles for unlock overlay, animations, and toast
+   ────────────────────────────────────────────────────────────── */
+
+/* Unlock overlay - shown until user scans poster */
+#unlock-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: 'Courier New', monospace;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+#unlock-overlay.unlock-hidden {
+  display: none;
+}
+
+#unlock-overlay.unlock-fade-out {
+  opacity: 0;
+  transform: scale(1.1);
+}
+
+/* Success state */
+#unlock-overlay.unlock-success {
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, rgba(0, 0, 0, 0.85) 70%);
+}
+
+/* Lock icon */
+.unlock-icon {
+  font-size: 64px;
+  margin-bottom: 24px;
+  animation: unlock-pulse 2s ease-in-out infinite;
+}
+
+@keyframes unlock-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+/* Instruction text */
+.unlock-text {
+  font-size: 18px;
+  letter-spacing: 0.1em;
+  text-align: center;
+  padding: 0 20px;
+  line-height: 1.6;
+  max-width: 400px;
+}
+
+.unlock-text-main {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #ffd700;
+}
+
+.unlock-text-sub {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+/* Success burst particles */
+.unlock-burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unlock-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #ffd700;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #ffd700;
+  animation: unlock-particle-burst 1s ease-out forwards;
+}
+
+@keyframes unlock-particle-burst {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(0);
+    opacity: 0;
+  }
+}
+
+/* Success toast */
+#unlock-toast {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid #ffd700;
+  color: #ffd700;
+  padding: 20px 40px;
+  border-radius: 12px;
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 0.15em;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+  z-index: 101;
+  opacity: 0;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#unlock-toast.unlock-toast-show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+#unlock-toast.unlock-toast-hidden {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+  pointer-events: none;
+}
+
+/* Scanning indicator */
+.unlock-scanning {
+  margin-top: 32px;
+  width: 60px;
+  height: 60px;
+  border: 3px solid rgba(255, 215, 0, 0.3);
+  border-top-color: #ffd700;
+  border-radius: 50%;
+  animation: unlock-spin 1s linear infinite;
+}
+
+@keyframes unlock-spin {
+  to { transform: rotate(360deg); }
+}

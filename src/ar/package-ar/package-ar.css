@@ -1,0 +1,57 @@
+/* ─── package-ar.css ──────────────────────────────────────────
+   Styles for Package AR mode
+   ────────────────────────────────────────────────────────────── */
+
+/* Hide ALL body tracking elements when in package mode */
+.package-ar-active #video,
+.package-ar-active #wing-canvas,
+.package-ar-active #wing-comp-canvas,
+.package-ar-active #person-canvas,
+.package-ar-active #mask-canvas,
+.package-ar-active #mask-comp-canvas,
+.package-ar-active #overlay-canvas,
+.package-ar-active #aura-canvas,
+.package-ar-active #record-canvas {
+  display: none !important;
+}
+
+/* Hide body tracking UI controls */
+.package-ar-active #exp-bar,
+.package-ar-active #btn-seg,
+.package-ar-active #btn-tryon,
+.package-ar-active #btn-flip,
+.package-ar-active #cam-mode-pill,
+.package-ar-active #btn-record,
+.package-ar-active #rec-timer,
+.package-ar-active #hint-overlay,
+.package-ar-active #cat-toast,
+.package-ar-active #controls {
+  display: none !important;
+}
+
+/* Hide debug HUD in package mode */
+.package-ar-active #debug-hud {
+  display: none !important;
+}
+
+/* Show 8th Wall container */
+#package-ar-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  z-index: 1;
+}
+
+.package-ar-active #package-ar-container {
+  display: block !important;
+}
+
+/* Ensure 8th Wall canvas fills container */
+.package-ar-active #package-ar-container canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}

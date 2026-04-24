@@ -1,0 +1,859 @@
+/* ─── superhero-ar.css ───────────────────────────────────────
+   All styles for the SuperheroAR overlay.
+   Scoped inside .ar-root to avoid polluting the React app.
+   ─────────────────────────────────────────────────────────── */
+
+.ar-root {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #000;
+  font-family: "Courier New", monospace;
+  /* No overflow:hidden — it breaks position:fixed children in Safari */
+}
+
+.ar-root #video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+.ar-root #video.mirror {
+  transform: scaleX(-1);
+}
+
+/* ── Canvas stack ── */
+.ar-root #wing-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  pointer-events: none;
+}
+.ar-root #wing-comp-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+.ar-root #person-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+}
+.ar-root #mask-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  pointer-events: none;
+}
+.ar-root #mask-comp-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+  pointer-events: none;
+}
+.ar-root #overlay-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 6;
+  pointer-events: none;
+}
+
+/* ── Splash ── */
+.ar-root #splash {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  cursor: pointer;
+  transition: opacity 0.6s ease;
+}
+.ar-root #splash.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.ar-root .splash-ring {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid #00e5ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: ar-pulse-ring 2s ease-in-out infinite;
+  position: relative;
+}
+.ar-root .splash-ring::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  animation: ar-pulse-ring 2s ease-in-out infinite 0.3s;
+}
+.ar-root .splash-icon {
+  font-size: 36px;
+}
+@keyframes ar-pulse-ring {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.7;
+  }
+}
+.ar-root .splash-title {
+  color: #00e5ff;
+  font-size: 13px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+.ar-root .splash-sub {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 0 32px;
+}
+
+/* ── Debug HUD ── */
+.ar-root #debug-hud {
+  position: absolute;
+  top: 52px;
+  left: 12px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.ar-root #debug-hud.ui-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.ar-root .hud-pill {
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  color: #00e5ff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ar-root .hud-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00e5ff;
+  animation: ar-blink 1.2s ease-in-out infinite;
+}
+.ar-root .hud-dot.red {
+  background: #ff4444;
+  animation: none;
+}
+.ar-root .hud-dot.yellow {
+  background: #ffcc00;
+}
+.ar-root .hud-dot.off {
+  background: #444;
+  animation: none;
+}
+@keyframes ar-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+/* ── Experience bar ── */
+.ar-root #exp-bar {
+  position: absolute;
+  bottom: max(24px, env(safe-area-inset-bottom, 24px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  width: min(88vw, 360px);
+  padding: 14px 24px 16px;
+  border-radius: 22px;
+  background: rgba(12, 12, 20, 0.55);
+  backdrop-filter: blur(22px) saturate(1.6);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+  transition: opacity 0.3s ease;
+  cursor: grab;
+}
+.ar-root #exp-bar:active {
+  cursor: grabbing;
+}
+.ar-root #exp-bar.ui-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.ar-root #exp-bar::before,
+.ar-root #exp-bar::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-color: rgba(255, 255, 255, 0.25);
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+}
+.ar-root #exp-bar::before {
+  left: 14px;
+  border-top-width: 1.5px;
+  border-left-width: 1.5px;
+  transform: translateY(-50%) rotate(-135deg);
+}
+.ar-root #exp-bar::after {
+  right: 14px;
+  border-top-width: 1.5px;
+  border-right-width: 1.5px;
+  transform: translateY(-50%) rotate(45deg);
+}
+.ar-root #exp-name {
+  color: #fff;
+  font-family: -apple-system, "SF Pro Display", "Helvetica Neue", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.ar-root #exp-dots {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  height: 6px;
+}
+.ar-root .exp-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+  transition:
+    width 0.2s ease,
+    background 0.2s ease;
+}
+.ar-root .exp-dot-active {
+  width: 18px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+/* ── Category toast ── */
+.ar-root #cat-toast {
+  position: absolute;
+  bottom: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 51;
+  background: rgba(12, 12, 20, 0.7);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 6px 18px;
+  color: #fff;
+  font-family: -apple-system, "SF Pro Display", "Helvetica Neue", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 0.5s ease;
+}
+.ar-root #cat-toast.cat-toast-hidden {
+  display: none;
+}
+.ar-root #cat-toast.cat-toast-fade {
+  opacity: 0;
+}
+
+/* ── Controls ── */
+.ar-root #controls {
+  position: absolute;
+  top: 50px;
+  right: 12px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: opacity 0.3s ease;
+}
+.ar-root #controls.ui-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.ar-root .ctrl-btn {
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.75);
+  font-family: -apple-system, "Helvetica Neue", sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 14px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* ── Flip button ── */
+.ar-root #btn-flip {
+  position: absolute;
+  bottom: 112px;
+  right: 16px;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 18px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition:
+    transform 0.2s,
+    background 0.2s;
+}
+.ar-root #btn-flip:active {
+  transform: scale(0.88);
+  background: rgba(255, 255, 255, 0.15);
+}
+.ar-root #btn-flip.ui-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* ── TRY ON button ── */
+.ar-root #btn-tryon {
+  position: absolute;
+  bottom: 112px;
+  right: 72px;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  padding: 0 12px;
+  height: 48px;
+  border-radius: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.ar-root #btn-tryon:active {
+  background: rgba(255, 255, 255, 0.12);
+}
+.ar-root #btn-tryon.ui-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Cam mode pill ── */
+.ar-root #cam-mode-pill {
+  position: absolute;
+  bottom: 168px;
+  right: 20px;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-family: "Courier New", monospace;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  pointer-events: none;
+}
+.ar-root #cam-mode-pill.ui-hidden {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* ── HIDE UI button ── */
+.ar-root #btn-toggle-ui {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.85);
+  font-family: -apple-system, "Helvetica Neue", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 7px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    opacity 0.2s;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  white-space: nowrap;
+}
+.ar-root #btn-toggle-ui:active {
+  background: rgba(255, 255, 255, 0.15);
+}
+.ar-root #btn-toggle-ui.ui-hidden-mode {
+  opacity: 0.4;
+}
+.ar-root #btn-toggle-ui.ui-hidden-mode:active {
+  opacity: 1;
+}
+
+/* ── Record button ── */
+.ar-root #btn-record {
+  position: absolute;
+  bottom: 112px;
+  left: 16px;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.85);
+  font-family: -apple-system, "Helvetica Neue", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 7px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.ar-root #btn-record:active {
+  background: rgba(255, 60, 60, 0.2);
+}
+.ar-root #btn-record.recording {
+  border-color: rgba(255, 60, 60, 0.9);
+  background: rgba(180, 0, 0, 0.4);
+  color: #fff;
+  animation: ar-rec-pulse 1s ease-in-out infinite;
+}
+@keyframes ar-rec-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+.ar-root #rec-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.ar-root #btn-record.ui-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Rec timer ── */
+.ar-root #rec-timer {
+  position: absolute;
+  bottom: 158px;
+  left: 16px;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(255, 60, 60, 0.3);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-family: "Courier New", monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: #ff6666;
+  display: none;
+  pointer-events: none;
+}
+
+/* ── Perf pill ── */
+.ar-root #perf-pill {
+  display: none;
+}
+
+/* ── QR gate ── */
+.ar-root #qr-gate {
+  position: absolute;
+  inset: 0;
+  z-index: 150;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  transition: opacity 0.5s ease;
+}
+.ar-root #qr-gate.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.ar-root .qr-title {
+  color: #00e5ff;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  text-align: center;
+}
+.ar-root .qr-sub {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-align: center;
+}
+.ar-root .qr-viewfinder {
+  position: relative;
+  width: 220px;
+  height: 220px;
+}
+.ar-root .qr-viewfinder video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+  opacity: 0.85;
+}
+.ar-root .qr-corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-color: #00e5ff;
+  border-style: solid;
+  border-width: 0;
+}
+.ar-root .qr-corner.tl {
+  top: 0;
+  left: 0;
+  border-top-width: 2px;
+  border-left-width: 2px;
+}
+.ar-root .qr-corner.tr {
+  top: 0;
+  right: 0;
+  border-top-width: 2px;
+  border-right-width: 2px;
+}
+.ar-root .qr-corner.bl {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 2px;
+  border-left-width: 2px;
+}
+.ar-root .qr-corner.br {
+  bottom: 0;
+  right: 0;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+}
+.ar-root .qr-scanline {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #00e5ff, transparent);
+  animation: ar-scan-sweep 2s ease-in-out infinite;
+  box-shadow: 0 0 8px #00e5ff;
+}
+@keyframes ar-scan-sweep {
+  0% {
+    top: 8px;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 212px;
+    opacity: 0;
+  }
+}
+.ar-root #qr-status {
+  color: rgba(0, 229, 255, 0.6);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+  min-height: 14px;
+  transition: color 0.3s;
+}
+.ar-root #qr-status.found {
+  color: #00ff88;
+  animation: ar-flash-found 0.4s ease;
+}
+@keyframes ar-flash-found {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+.ar-root #qr-canvas {
+  display: none;
+}
+
+/* ── Hint overlay ── */
+.ar-root #hint-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 55;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  gap: 16px;
+}
+.ar-root #hint-overlay.hint-hidden {
+  display: none;
+}
+.ar-root #hint-overlay.hint-fade-out {
+  animation: ar-hint-fade 0.6s ease forwards;
+}
+@keyframes ar-hint-fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.ar-root #hint-icon {
+  font-size: 96px;
+  line-height: 1;
+  filter: drop-shadow(0 0 24px rgba(0, 229, 255, 0.7));
+  animation: ar-hint-bob 1.8s ease-in-out infinite;
+}
+@keyframes ar-hint-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.ar-root #hint-text {
+  font-family: "Courier New", monospace;
+  font-size: clamp(13px, 3.5vw, 18px);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: center;
+  color: #fff;
+  max-width: 72vw;
+  padding: 10px 20px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+}
+
+/* ── Try-On overlay (tryon.css content inlined here) ── */
+#tryon-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 210;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.25s ease;
+}
+#tryon-overlay.tryon-hidden {
+  display: none;
+}
+#tryon-feed-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+#tryon-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+.tryon-back-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.2s;
+}
+.tryon-back-btn:active {
+  background: rgba(255, 255, 255, 0.12);
+}
+#tryon-bar {
+  position: absolute;
+  bottom: max(24px, env(safe-area-inset-bottom, 24px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 40px;
+  padding: 10px 16px;
+  min-width: 220px;
+  max-width: 80vw;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+#tryon-bar-centre {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+#tryon-exp-name {
+  color: #fff;
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+#tryon-exp-dots {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.tryon-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.tryon-dot.active {
+  background: #fff;
+  transform: scale(1.3);
+}
+.tryon-arrow {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 22px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.15s;
+  font-family: inherit;
+}
+.tryon-arrow:active {
+  color: #fff;
+}
+/* ═══════════════════════════════════════════════════════════
+   UNLOCK SYSTEM - Shake animation for locked swipe attempts
+   ═══════════════════════════════════════════════════════════ */
+
+@keyframes exp-bar-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
