@@ -1,0 +1,31 @@
+{
+  "imagePath": "zindabad-tube/zindabad-tube_luminance.png",
+  "metadata": null,
+  "name": "zindabad-tube",
+  "type": "CYLINDER",
+  "properties": {
+    "left": 236,
+    "top": 0,
+    "width": 1500,
+    "height": 2000,
+    "isRotated": false,
+    "originalWidth": 1972,
+    "originalHeight": 2000,
+    "targetCircumferenceTop": 280,
+    "cylinderCircumferenceTop": 314,
+    "cylinderCircumferenceBottom": 314,
+    "cylinderSideLength": 283.97565922920893,
+    "arcAngle": 321.0191082802548,
+    "coniness": 0,
+    "inputMode": "ADVANCED",
+    "unit": "mm"
+  },
+  "resources": {
+    "originalImage": "zindabad-tube_original.png",
+    "croppedImage": "zindabad-tube_cropped.png",
+    "thumbnailImage": "zindabad-tube_thumbnail.png",
+    "luminanceImage": "zindabad-tube_luminance.png"
+  },
+  "created": 1774442441842,
+  "updated": 1774442441842
+}
